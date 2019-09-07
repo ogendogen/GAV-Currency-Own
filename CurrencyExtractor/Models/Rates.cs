@@ -15,7 +15,7 @@ namespace CurrencyExtractor.Models
         public double DKK { get; set; }
         public double HUF { get; set; }
         public double CZK { get; set; }
-        public double AUD { get; set; }
+        public double GBP { get; set; }
         public double RON { get; set; }
         public double SEK { get; set; }
         public double IDR { get; set; }
@@ -26,8 +26,8 @@ namespace CurrencyExtractor.Models
         public double JPY { get; set; }
         public double THB { get; set; }
         public double CHF { get; set; }
-        public double SGD { get; set; }
-        public double PLN { get; set; }
+        public double EUR { get; set; }
+        public double MYR { get; set; }
         public double BGN { get; set; }
         public double TRY { get; set; }
         public double CNY { get; set; }
@@ -36,9 +36,10 @@ namespace CurrencyExtractor.Models
         public double ZAR { get; set; }
         public double USD { get; set; }
         public double MXN { get; set; }
+        public double SGD { get; set; }
+        public double AUD { get; set; }
         public double ILS { get; set; }
-        public double GBP { get; set; }
         public double KRW { get; set; }
-        public double MYR { get; set; }
+        public double PLN { get; set; }
     }
 }

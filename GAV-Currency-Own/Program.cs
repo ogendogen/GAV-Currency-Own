@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CurrencyExtractor;
 using CurrencyExtractor.Models;
+using CurrencyTransformator;
 
 namespace GAV_Currency_Own
 {
@@ -18,11 +19,8 @@ namespace GAV_Currency_Own
             try
             {
                 Console.WriteLine("Starting extraction...");
-                FinalOutput finalOutput = Extractor.GetOutputFromFile("live.json", "latest.json");
-                Console.WriteLine("FinalOutput object deserialized");
-
-                Console.WriteLine("Writing to file");
-                JsonDumper.DumpJsonToFile("final.json", finalOutput);
+                MediatedSchema mediatedSchema = Extractor.GetOutputFromWeb("EUR");
+                Console.WriteLine("Mediated schema object deserialized");
 
                 Console.WriteLine("Extraction successful");
                 Console.ReadKey();

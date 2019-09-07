@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using CurrencyExtractor;
 using CurrencyExtractor.Models;
 using CurrencyTransformator;
+using CurrencyTransformator.Models;
 
 namespace GAV_Currency_Own
 {
-    class Program
+    public class Program
     {
         public static void Main(string[] args)
         {
@@ -23,6 +24,11 @@ namespace GAV_Currency_Own
                 Console.WriteLine("Mediated schema object deserialized");
 
                 Console.WriteLine("Extraction successful");
+                Console.WriteLine("Starting transformation...");
+                FinalOutput finalOutput = Transformator.TransformToOutput(mediatedSchema);
+                string serialized = Serializer.SerializeFinalOutput(finalOutput);
+                Console.WriteLine("Transformation completed");
+
                 Console.ReadKey();
             }
             catch (Exception e)

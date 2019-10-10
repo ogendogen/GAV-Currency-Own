@@ -12,22 +12,74 @@ namespace CurrencyExtractor
 {
     public static class Extractor
     {
-        public static FinalOutput GetOutputFromFile(string apiLayerPath, string exChangeRatesPath)
+        private static string[] currencies = {
+            "CAD",
+            "HKD",
+            "ISK",
+            "PHP",
+            "DKK",
+            "HUF",
+            "CZK",
+            "GBP",
+            "RON",
+            "SEK",
+            "IDR",
+            "INR",
+            "BRL",
+            "RUB",
+            "HRK",
+            "JPY",
+            "THB",
+            "CHF",
+            "EUR",
+            "MYR",
+            "BGN",
+            "TRY",
+            "CNY",
+            "NOK",
+            "NZD",
+            "ZAR",
+            "USD",
+            "MXN",
+            "SGD",
+            "AUD",
+            "ILS",
+            "KRW",
+            "PLN"
+            };
+
+        public static MediatedSchema GetOutputFromFile(string apiLayerPath, string exChangeRatesPath)
         {
             string rawApiLayer = File.ReadAllText(apiLayerPath);
             string rawExChangeRates = File.ReadAllText(exChangeRatesPath);
 
-            return Deserializer.DeserializeToFinalOutput(rawApiLayer, rawExChangeRates);
+            return Deserializer.DeserializeToMediatedSchema(rawApiLayer, rawExChangeRates);
         }
 
-        public static FinalOutput GetOutputFromWeb()
+        public static MediatedSchema GetOutputFromWeb(string currency="EUR")
         {
             WebClient webClient = new WebClient();
 
-            string rawApiLayer = webClient.DownloadString("http://www.apilayer.net/api/live?access_key=aa06bb8220d39379e3c4da759764407a");
-            string rawExChangeRates = webClient.DownloadString("https://api.exchangeratesapi.io/latest");
+            string apiv4 = webClient.DownloadString("https://api.exchangerate-api.com/v4/latest/" + currency);
+            string api = webClient.DownloadString("https://api.exchangeratesapi.io/latest?base=" + currency);
 
-            return Deserializer.DeserializeToFinalOutput(rawApiLayer, rawExChangeRates);
+            return Deserializer.DeserializeToMediatedSchema(api, apiv4);
+        }
+
+        public static IEnumerable<MediatedSchema> GetAllFromWeb()
+        {
+            WebClient webClient = new WebClient();
+
+            int counter = 0;
+            foreach (var curr in currencies)
+            {
+                counter++;
+                string apiv4 = webClient.DownloadString("https://api.exchangerate-api.com/v4/latest/" + curr);
+                string api = webClient.DownloadString("https://api.exchangeratesapi.io/latest?base=" + curr);
+                Console.WriteLine(counter + "/" + currencies.Length + " extracted");
+
+                yield return Deserializer.DeserializeToMediatedSchema(api, apiv4);
+            }
         }
     }
 }

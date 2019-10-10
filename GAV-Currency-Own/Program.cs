@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using CurrencyExtractor;
 using CurrencyExtractor.Models;
 using CurrencyTransformator;
@@ -19,32 +20,36 @@ namespace GAV_Currency_Own
 
             try
             {
-                Console.WriteLine("Starting integration...");
-                MediatedSchema mediated = Extractor.GetOutputFromWeb("EUR");
-                Console.WriteLine("Mediated schema object deserialized");
+                Console.WriteLine("Starting integration");
+                Console.WriteLine("Extraction started");
+                Console.WriteLine("Establishing connection...");
+                List<MediatedSchema> mediatedSchemas = Extractor.GetAllFromWeb().ToList();
+                Console.WriteLine("Mediated schema objects deserialized");
 
                 Console.WriteLine("Extraction successful");
                 Console.WriteLine("Starting transformation...");
 
                 bool differentCurrency, differentDate;
-                Validator.ValidateMediatedSchemaObject(mediated, out differentCurrency, out differentDate);
-                if (differentCurrency)
+                foreach (var mediated in mediatedSchemas)
                 {
-                    Console.WriteLine("Curriencies are different. Validation failed. Stopping.");
-                    Console.ReadKey();
-                    return;
-                }
-                if (differentDate)
-                {
-                    Console.WriteLine("Dates are different. Validation failed. Stopping.");
-                    Console.ReadKey();
-                    return;
+                    Validator.ValidateMediatedSchemaObject(mediated, out differentCurrency, out differentDate);
+                    if (differentCurrency)
+                    {
+                        Console.WriteLine("Curriencies are different. Removing data");
+                        continue;
+                    }
+                    if (differentDate)
+                    {
+                        Console.WriteLine("Dates are different. Removing data");
+                        continue;
+                    }
+
+                    FinalOutput finalOutput = Transformator.TransformToOutput(mediated);
+                    string serialized = Serializer.SerializeFinalOutput(finalOutput);
+                    File.WriteAllText("../loader/transformed-" + mediated.API.@base + ".json", serialized);
                 }
 
-                FinalOutput finalOutput = Transformator.TransformToOutput(mediated);
-                string serialized = Serializer.SerializeFinalOutput(finalOutput);
                 Console.WriteLine("Transformation completed");
-
                 Console.ReadKey();
             }
             catch (Exception e)
